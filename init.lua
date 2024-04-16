@@ -7,7 +7,7 @@
 ========         .----------------------.   | === |          ========
 ========         |.-""""""""""""""""""-.|   |-----|          ========
 ========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
+========         ||        NVIM        ||   |-----|          ========
 ========         ||                    ||   | === |          ========
 ========         ||                    ||   |-----|          ========
 ========         ||:Tutor              ||   |:::::|          ========
@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -100,9 +100,10 @@ vim.g.have_nerd_font = false
 
 -- Make line numbers default
 vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
+
+-- Enables 24-bit RGB color
+vim.opt.termguicolors = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -117,6 +118,9 @@ vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.opt.breakindent = true
+
+-- Line length limit
+vim.opt.colorcolumn = '80'
 
 -- Save undo history
 vim.opt.undofile = true
@@ -204,6 +208,60 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Open netrw
+vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Open netrw' })
+
+-- Save like in the most common editors
+vim.keymap.set('n', '<C-s>', '<cmd>w<CR>', { desc = 'Save on Ctrl + s' })
+
+-- Move selected lines in visual mode
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move selected code down (visual mode)' })
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move selected code up (visual mode)' })
+
+-- Keep cursor in place when press J
+vim.keymap.set('n', 'J', 'mzJ`z', { desc = 'Keep cursor in place when press J' })
+
+-- Center screen on Ctrl+u, Ctrl+d moves
+vim.keymap.set('n', '<C-d>', '<C-d>zz', { desc = 'Center screen on Ctrl + u move' })
+vim.keymap.set('n', '<C-u>', '<C-u>zz', { desc = 'Center screen on Ctrl + d move' })
+
+-- Center screen on next
+vim.keymap.set('n', 'n', 'nzzzv', { desc = 'Center screen on next' })
+vim.keymap.set('n', 'N', 'Nzzzv', { desc = 'Center screen on prev' })
+
+-- GIGA yankers and pasters
+vim.keymap.set('x', '<leader>p', [["_dP]], { desc = 'Paste from system clipboard' })
+vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]], { desc = 'Del and yank into system clipboard' })
+vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]], { desc = 'Yank into system clipboard' })
+vim.keymap.set('n', '<leader>Y', [["+Y]], { desc = 'Yank curr line into system clipboard' })
+
+-- Better indenting
+vim.keymap.set('v', '<', '<gv', { desc = 'Indent v-block to right' })
+vim.keymap.set('v', '>', '>gv', { desc = 'Indent v-block to left' })
+
+-- Disable Q
+vim.keymap.set('n', 'Q', '<nop>', { desc = 'Disable Q' })
+
+-- Move between buffers
+vim.keymap.set('n', '[b', '<cmd>bprevious<cr>', { desc = 'Prev buffer' })
+vim.keymap.set('n', ']b', '<cmd>bnext<cr>', { desc = 'Next buffer' })
+
+-- Location and quickfix movements
+vim.keymap.set('n', '<C-n>', '<cmd>cnext<CR>zz', { desc = 'Move to the next entity in quickfix' })
+vim.keymap.set('n', '<C-m>', '<cmd>cprev<CR>zz', { desc = 'Move to the previous entity in quickfix' })
+vim.keymap.set('n', '<leader>k', '<cmd>lnext<CR>zz')
+vim.keymap.set('n', '<leader>j', '<cmd>lprev<CR>zz')
+
+-- Center cursor and screen on one line movements
+vim.keymap.set('n', '<C-e>', '<C-e>jzz', { desc = 'Center cursor and screen on one line down movement ' })
+vim.keymap.set('n', '<C-y>', '<C-y>kzz', { desc = 'Center cursor and screen on one line up movement ' })
+
+-- Toggle undo tree
+vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Toggle undo tree' })
+
+-- Make code rain
+vim.keymap.set('n', '<leader>fml', '<cmd>CellularAutomaton make_it_rain<CR>', { desc = 'Make cool rain on the code' })
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -227,6 +285,95 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+
+  -- Harpoon
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    config = function() -- This is the function that runs, AFTER loading
+      local harpoon = require 'harpoon'
+
+      -- REQUIRED
+      harpoon:setup()
+      -- REQUIRED
+
+      vim.keymap.set('n', '<leader>a', function()
+        harpoon:list():add()
+      end)
+      vim.keymap.set('n', '<leader>h', function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end)
+
+      vim.keymap.set('n', '1', function()
+        harpoon:list():select(1)
+      end)
+      vim.keymap.set('n', '2', function()
+        harpoon:list():select(2)
+      end)
+      vim.keymap.set('n', '3', function()
+        harpoon:list():select(3)
+      end)
+      vim.keymap.set('n', '4', function()
+        harpoon:list():select(4)
+      end)
+    end,
+  },
+
+  --TMUX navigation
+  {
+    'christoomey/vim-tmux-navigator',
+    cmd = {
+      'TmuxNavigateLeft',
+      'TmuxNavigateDown',
+      'TmuxNavigateUp',
+      'TmuxNavigateRight',
+      'TmuxNavigatePrevious',
+    },
+    keys = {
+      { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
+      { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
+      { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
+      { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
+      { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
+    },
+  },
+
+  -- Golang plugin
+  {
+    'fatih/vim-go',
+    build = ':GoInstallBinaries',
+  },
+
+  -- Trouble nice view
+  {
+    'folke/trouble.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+
+  -- Autocompletion icons
+  'onsails/lspkind-nvim',
+
+  -- Cool Code Raining Tool
+  'eandrju/cellular-automaton.nvim',
+
+  -- Undo tree
+  'mbbill/undotree',
+
+  -- Autoclosing brackets
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    config = function()
+      require('nvim-autopairs').setup {}
+    end,
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -382,7 +529,11 @@ require('lazy').setup({
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
-          previewer = false,
+          previewer = true,
+          layout_config = {
+            prompt_position = 'bottom',
+            width = 120,
+          },
         })
       end, { desc = '[/] Fuzzily search in current buffer' })
 
@@ -402,6 +553,77 @@ require('lazy').setup({
     end,
   },
 
+  { 'VonHeikemen/lsp-zero.nvim', branch = 'v3.x' },
+  {
+    'neovim/nvim-lspconfig',
+    opts = {
+      inlay_hints = {
+        enabled = false,
+      },
+      diagnostics = { virtual_text = { prefix = 'icons' } },
+      capabilities = {
+        textDocument = {
+          foldingRange = {
+            dynamicRegistration = false,
+            lineFoldingOnly = true,
+          },
+          completion = {
+            completionItem = {
+              snippetSupport = true,
+            },
+          },
+        },
+      },
+      showMessage = {
+        messageActionItem = {
+          additionalPropertiesSupport = true,
+        },
+      },
+      flags = {
+        debounce_text_changes = 150,
+      },
+      servers = {
+        gopls = {
+          settings = {
+            gopls = {
+              gofumpt = true,
+              codelenses = {
+                gc_details = false,
+                generate = true,
+                regenerate_cgo = true,
+                run_govulncheck = true,
+                test = true,
+                tidy = true,
+                upgrade_dependency = true,
+                vendor = true,
+              },
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+              },
+              analyses = {
+                fieldalignment = true,
+                nilness = true,
+                unusedparams = true,
+                unusedwrite = true,
+                useany = true,
+              },
+              usePlaceholders = true,
+              completeUnimported = true,
+              staticcheck = true,
+              directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules', '-.nvim' },
+              semanticTokens = true,
+            },
+          },
+        },
+      },
+    },
+  },
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -553,7 +775,7 @@ require('lazy').setup({
 
         lua_ls = {
           -- cmd = {...},
-          -- filetypes = { ...},
+          -- filetypes = {...},
           -- capabilities = {},
           settings = {
             Lua = {
@@ -626,11 +848,11 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
+        javascript = { { 'prettierd', 'prettier' } },
       },
     },
   },
