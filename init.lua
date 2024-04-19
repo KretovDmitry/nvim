@@ -90,6 +90,9 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Block cursor in insert mode
+vim.opt.guicursor = ''
+
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
 
@@ -119,7 +122,7 @@ vim.opt.clipboard = 'unnamedplus'
 -- Enable break indent
 vim.opt.breakindent = true
 
--- Line length limit
+-- Column showing line length limit
 vim.opt.colorcolumn = '80'
 
 -- Save undo history
@@ -261,6 +264,9 @@ vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { desc = 'Toggle undo t
 
 -- Make code rain
 vim.keymap.set('n', '<leader>fml', '<cmd>CellularAutomaton make_it_rain<CR>', { desc = 'Make cool rain on the code' })
+
+-- Run sql formatter pg_format on the entire file
+vim.keymap.set('n', '<leader>fs', '<cmd>%!pg_format<cr>', { desc = 'Format SQL file' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
