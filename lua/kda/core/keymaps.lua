@@ -84,5 +84,9 @@ keymap.set('n', '<leader>fml', '<cmd>CellularAutomaton make_it_rain<CR>', { desc
 -- Run sql formatter pg_format on the entire file
 keymap.set('n', '<leader>fs', '<cmd>%!pg_format<cr>', { desc = 'Format SQL file' })
 
+-- Open messages
+keymap.set('n', '<leader>m', '<cmd>messages<CR>', { desc = 'Show messages' })
+
 -- Vim-go
 keymap.set('n', '<leader>fi', '<cmd>GoIfErr<CR>', { desc = 'Insert if err != nil block' })
+keymap.set('n', '<leader>tc', '<cmd>GoCoverageToggle<CR>', { desc = 'Toggle test coverage in Go files' })
