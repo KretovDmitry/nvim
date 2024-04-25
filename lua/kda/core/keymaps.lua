@@ -16,7 +16,10 @@ keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight
 keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
-keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+keymap.set('n', '<leader>ql', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix [L]ocation List' })
+keymap.set('n', '<leader>qf', vim.diagnostic.setqflist, { desc = 'Open diagnostic [Q]uick[F]ix List' })
+keymap.set('n', '<leader>qc', '<cmd>cexpr []<CR>', { desc = '[Q]uickfix [C]lear diagnostic List' })
+keymap.set('n', '<leader>cq', '<cmd>cclose<CR>', { desc = '[C]lose [Q]uickfix diagnostic List' })
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
