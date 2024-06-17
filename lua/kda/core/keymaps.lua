@@ -104,3 +104,4 @@ keymap.set('n', '<leader>w<', '<C-w>25<', { desc = 'Decrease current window widt
 keymap.set('n', '<leader>w>', '<C-w>25>', { desc = 'Increase current window width' })
 keymap.set('n', '<leader>w-', '<C-w>15-', { desc = 'Decrease current window height' })
 keymap.set('n', '<leader>w+', '<C-w>15+', { desc = 'Increase current window weight' })
+
