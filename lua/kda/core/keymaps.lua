@@ -93,6 +93,8 @@ keymap.set('n', '<leader>m', '<cmd>messages<CR>', { desc = 'Show messages' })
 -- Vim-go
 keymap.set('n', '<leader>fi', '<cmd>GoIfErr<CR>', { desc = 'Insert if err != nil block' })
 keymap.set('n', '<leader>tc', '<cmd>GoCoverageToggle<CR>', { desc = 'Toggle test coverage in Go files' })
+keymap.set('n', '<leader>tf', '<cmd>GoTestFunc<CR>', { desc = 'Run test function under the cursor' })
+keymap.set('n', '<leader>tF', '<cmd>GoTestFile<CR>', { desc = 'Run current test file' })
 
 -- Windows controlling keymaps
 keymap.set('n', '<leader>wv', '<C-w>v', { desc = 'Split window vertically' })
@@ -104,4 +106,3 @@ keymap.set('n', '<leader>w<', '<C-w>25<', { desc = 'Decrease current window widt
 keymap.set('n', '<leader>w>', '<C-w>25>', { desc = 'Increase current window width' })
 keymap.set('n', '<leader>w-', '<C-w>15-', { desc = 'Decrease current window height' })
 keymap.set('n', '<leader>w+', '<C-w>15+', { desc = 'Increase current window weight' })
-

@@ -4,6 +4,13 @@ vim.cmd 'let g:netrw_liststyle = 3'
 -- [[ Setting options ]]
 -- See `:help opt` `:help option-list`
 local opt = vim.opt
+--
+-- Filetype
+vim.filetype.add {
+  extension = {
+    brief = 'brief',
+  },
+}
 
 -- Block cursor in insert mode
 opt.guicursor = ''
