@@ -75,6 +75,44 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  -- automatic dark mode
+  {
+    'cormacrelf/dark-notify',
+    config = function()
+      require('dark_notify').run()
+    end,
+  },
+
+  -- colorscheme
+  {
+    'ellisonleao/gruvbox.nvim',
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      require('gruvbox').setup {
+        contrast = 'hard',
+      }
+      vim.cmd [[colorscheme gruvbox]]
+    end,
+  },
+
+  -- LSP for Cargo.toml
+  {
+    'Saecki/crates.nvim',
+    event = { 'BufRead Cargo.toml' },
+    opts = {
+      completion = {
+        crates = {
+          enabled = true,
+        },
+      },
+      lsp = {
+        enabled = true,
+        actions = true,
+        completion = true,
+        hover = true,
+      },
+    },
+  },
 
   -- Text folding
   {
@@ -555,6 +593,22 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
+        phpactor = {
+          cmd = { 'phpactor', 'language-server' },
+          filetypes = { 'php' },
+          root_dir = require('lspconfig').util.root_pattern('.git', '.phpactor.json', '.phpactor.yml'),
+          init_options = {
+            ['indexer.exclude_patterns'] = {
+              '/vendor/**/Tests',
+              '/vendor/**/tests/**/*',
+              '/vendor/composer/**/*',
+              '/generated/**/*',
+              '/pub/static/**/*',
+              '/var/**/*',
+              '/dev/**/*',
+            },
+          },
+        },
         gopls = {
           settings = {
             gopls = {
@@ -594,7 +648,7 @@ require('lazy').setup({
           },
         },
         -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -630,12 +684,14 @@ require('lazy').setup({
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-      })
+      -- vim.list_extend(ensure_installed, {
+      -- 'stylua', -- Used to format Lua code
+      -- })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
+        ensure_installed = ensure_installed,
+        automatic_installation = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -664,7 +720,7 @@ require('lazy').setup({
       },
     },
     opts = {
-      notify_on_error = false,
+      notify_on_error = true,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
@@ -679,10 +735,21 @@ require('lazy').setup({
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
-        --
+        php = { 'php-cs-fixer' },
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         javascript = { { 'prettierd', 'prettier' } },
+      },
+      formatters = {
+        ['php-cs-fixer'] = {
+          command = 'php-cs-fixer',
+          args = {
+            'fix',
+            '--rules=@PSR12', -- Formatting preset. Other presets are available, see the php-cs-fixer docs.
+            '$FILENAME',
+          },
+          stdin = false,
+        },
       },
     },
   },
